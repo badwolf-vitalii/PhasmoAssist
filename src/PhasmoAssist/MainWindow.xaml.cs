@@ -832,14 +832,28 @@ namespace PhasmoAssist
                     {
                         tbAssistTimer.Text = _sw.Elapsed.ToString("ss") + "." + _sw.Elapsed.Milliseconds.ToString();
                     }
-                    if (_sw.Elapsed.Seconds >= 20)
+
+                    if (_sw.Elapsed.Seconds >= 20 && _sw.Elapsed.Seconds < 22)
                     {
                         tbAssistTimer.FontSize = _timerFontSizeAbove20;
                     }
-                    if (_sw.Elapsed.Seconds >= 180)
+                    if (_sw.Elapsed.Seconds >= 25 && _sw.Elapsed.Seconds < 27)
                     {
+                        tbAssistTimer.FontSize = _timerFontSizeAbove20 + 4;
                         tbAssistTimer.Foreground = Brushes.Red;
                     }
+
+                    if (_sw.Elapsed.Seconds >= 100 && _sw.Elapsed.Seconds < 102)
+                    {
+                        tbAssistTimer.Foreground = Brushes.White;
+                        tbAssistTimer.FontSize = _timerFontSizeAbove20;
+                    }
+                    if (_sw.Elapsed.Seconds >= 180 && _sw.Elapsed.Seconds < 182)
+                    {
+                        tbAssistTimer.FontSize = _timerFontSizeAbove20 + 4;
+                        tbAssistTimer.Foreground = Brushes.Red;
+                    }
+
                     if (_sw.Elapsed.TotalMinutes >= 10)
                     {
                         _assistTimerToken.Cancel();
