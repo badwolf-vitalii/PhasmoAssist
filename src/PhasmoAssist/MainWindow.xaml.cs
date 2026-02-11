@@ -20,12 +20,12 @@ namespace PhasmoAssist
     public partial class MainWindow : Window
     {
 #if DEBUG
-        const string TargetProcessName = "Notepad++";
+        const string TargetProcessName = "Notepad";
 #else
         const string TargetProcessName = "Phasmophobia";
 #endif
 
-        private GlobalKeyboardHook _keyboardHook;
+        private GlobalInputHook _keyboardHook;
         private bool _isVisible { get; set; }
         private bool _isTemporarilyHidden { get; set; } // hidden and waiting for the TargetProcessName
         private bool _isFocused { get; set; } // this process or the TargetProcessName is focused
@@ -37,14 +37,16 @@ namespace PhasmoAssist
         private int _evidencesFontSize = 35;
         private int _ghostsFontSize = 35;
         private int _ghostsFontSizeIdentified = 60;
-        private Stopwatch _sw { get; set; }
+        private OffsetStopwatch _sw { get; set; }
+        private OffsetStopwatch _sw2 { get; set; }
+        private TimeSpan _elapsedSw { get; set; }
         private CancellationTokenSource? _assistTimerToken { get; set; }
         private CancellationTokenSource? _blinkTextToken { get; set; }
         
         private Key _shortcutKet
         {
-            get => GlobalKeyboardHook.ShortcutKey;
-            set => GlobalKeyboardHook.ShortcutKey = value;
+            get => GlobalInputHook.ShortcutKey;
+            set => GlobalInputHook.ShortcutKey = value;
         }
 
         private List<Ghost>? _ghosts { get; set; }
@@ -89,9 +91,11 @@ namespace PhasmoAssist
             LoadEvidences();
             LoadKeys();
 
-            _sw = new Stopwatch();
-            _keyboardHook = new GlobalKeyboardHook();
+            _sw = new OffsetStopwatch();
+            _sw2 = new OffsetStopwatch();
+            _keyboardHook = new GlobalInputHook();
             _keyboardHook.KeyPressed += OnGlobalKeyPressed;
+            _keyboardHook.MouseButtonChanged += OnMouseButtonChanged;
 
 #if RELEASE
             LaunchTheGame();
@@ -645,7 +649,7 @@ namespace PhasmoAssist
                                 {
                                     try
                                     {
-                                        if (GlobalKeyboardHook.LCtrl && n > 0)
+                                        if (GlobalInputHook.LCtrl && n > 0)
                                         {
                                             if (n < 10)
                                             {
@@ -686,6 +690,25 @@ namespace PhasmoAssist
             });
         }
 
+        private void OnMouseButtonChanged(System.Windows.Input.MouseButton button, bool isDown, GlobalInputHook.POINT pt)
+        {
+            if (isDown) return;
+            switch (button)
+            {
+                case MouseButton.XButton1:
+                    {
+                        _sw2.Reset();
+                        F1();
+                        break;
+                    }
+                case MouseButton.XButton2:
+                    {
+                        F1(_elapsedSw);
+                        break;
+                    }
+            }
+        }
+
         private void LaunchTheGame()
         {
             try
@@ -724,7 +747,9 @@ namespace PhasmoAssist
             _isVisible = !_isVisible;
         }
 
-        private void F1()
+        private void F1() => F1(TimeSpan.Zero);
+
+        private void F1(TimeSpan elapsedSw)
         {
             if (_isTimerReset)
             {
@@ -734,12 +759,15 @@ namespace PhasmoAssist
                 tbAssistTimer.FontSize = _timerFontSizeInitial;
                 tbAssistTimer.Foreground = Brushes.White;
                 Task.Run(AssistTimer);
-                _sw.Start();
+                _sw.Start(elapsedSw + _sw2.Elapsed);
+                _sw2.Reset();
                 tbAssistTimer.Visibility = Visibility.Visible;
             }
             else
             {
+                _elapsedSw = _sw.Elapsed;
                 _sw.Reset();
+                _sw2.Start();
                 _isTimerReset = true;
                 tbAssistTimer.Visibility = Visibility.Collapsed;
             }
