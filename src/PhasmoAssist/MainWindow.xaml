@@ -299,7 +299,7 @@
                                    Width="32"
                                    Height="32"
                                    Cursor="Hand"
-                                   Tag="https://discord.gg/SgnkVNR6"
+                                   Tag="https://discord.gg/eBgN5YP3"
                                    MouseDown="Image_MouseDown"/>
                         </StackPanel>
                     </Grid>
