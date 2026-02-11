@@ -826,11 +826,11 @@ namespace PhasmoAssist
                 {
                     if (_sw.Elapsed.Minutes > 0)
                     {
-                        tbAssistTimer.Text = _sw.Elapsed.ToString("mm") + "." + _sw.Elapsed.ToString("ss") + "." + _sw.Elapsed.Milliseconds.ToString();
+                        tbAssistTimer.Text = _sw.Elapsed.ToString("mm") + ":" + _sw.Elapsed.ToString("ss");
                     }
                     else
                     {
-                        tbAssistTimer.Text = _sw.Elapsed.ToString("ss") + "." + _sw.Elapsed.Milliseconds.ToString();
+                        tbAssistTimer.Text = _sw.Elapsed.ToString("ss");
                     }
 
                     if (_sw.Elapsed.Seconds >= 20 && _sw.Elapsed.Seconds < 22)
