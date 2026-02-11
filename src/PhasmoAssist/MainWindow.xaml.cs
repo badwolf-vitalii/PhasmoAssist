@@ -564,12 +564,12 @@ namespace PhasmoAssist
             _keys.Add(Key.G, 20);
             _keys.Add(Key.H, 21);
             
-            _keys.Add(Key.Z, 22);
-            _keys.Add(Key.X, 23);
-            _keys.Add(Key.C, 24);
-            _keys.Add(Key.V, 25);
-            _keys.Add(Key.B, 26);
-            _keys.Add(Key.N, 27);
+            _keys.Add(Key.X, 22);
+            _keys.Add(Key.C, 23);
+            _keys.Add(Key.V, 24);
+            _keys.Add(Key.B, 25);
+            _keys.Add(Key.N, 26);
+            _keys.Add(Key.M, 27);
         }
 
         private Key GetKey(int id) => _keys.Keys.FirstOrDefault(p => _keys[p] == id);
@@ -643,22 +643,40 @@ namespace PhasmoAssist
                                 }
                                 else
                                 {
-                                    if (GlobalKeyboardHook.LCtrl && n > 0)
+                                    try
                                     {
-                                        if (n < 10)
+                                        if (GlobalKeyboardHook.LCtrl && n > 0)
                                         {
-                                            _ghosts![n - 1].Hidden = !_ghosts[n - 1].Hidden;
+                                            if (n < 10)
+                                            {
+                                                n = n - 1;
+                                                if (_ghosts!.Count > n)
+                                                {
+                                                    _ghosts![n].Hidden = !_ghosts[n].Hidden;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                n = n - 1;
+                                                if (_ghosts!.Count > n)
+                                                {
+                                                    _ghosts[n].Hidden = !_ghosts[n].Hidden;
+                                                }
+                                            }
+                                            OnEvidencesUpdated();
                                         }
-                                        else
+                                        else if (n > 0 && n < 8)
                                         {
-                                            _ghosts![n - 1].Hidden = !_ghosts[n - 1].Hidden;
+                                            n = n - 1;
+                                            if (_ghosts!.Count > n)
+                                            {
+                                                _evidences[(EEvidence)n] = !_evidences[(EEvidence)n];
+                                            }
+                                            OnEvidencesUpdated();
                                         }
-                                        OnEvidencesUpdated();
                                     }
-                                    else if (n > 0 && n < 8)
+                                    catch (Exception ex)
                                     {
-                                        _evidences[(EEvidence)(n - 1)] = !_evidences[(EEvidence)(n - 1)];
-                                        OnEvidencesUpdated();
                                     }
                                 }
                                 break;
