@@ -9,8 +9,9 @@ This tool is a WPF application written in C#. It requires the Microsoft .NET8 Ru
 
 KEY BINDINGS
 
-F1 – start/stop a timer
-A timer font size gets bigger after 20 seconds and the font foreground color gets red after 180 seconds.
+F1 – start/stop a timer. A timer font size gets bigger after 20 and 100 seconds and the font foreground color gets red after 25 and 180 seconds (it turns back to white after 100 seconds). Timer always starts from 0.
+XMouse1 - does the same F1 does.
+XMouse2 - Restores the timer, if it's been stopped accidentially. Timer continues taking into account all the time elapsed after the moment when it's been stopped.
 
 F2 – change language
 Now, there are only five dictionaries: Ukrainian, English, Italian, French, Russian. You can cycle through the languages by pressing F2. You can also add a new language – just create a new TXT file in the directory Languages and fill it in with new translation. The lastly activated language will be selected automatically on the next start.
@@ -45,7 +46,9 @@ Also you can change the text size in the config.cfg file.
 
 ПРИЗНАЧЕННЯ КЛАВІШ
 
-F1 – запуск/зупинка таймера. Розмір шрифту таймера збільшується після 20 секунд, а колір шрифту стає червоним після 180 секунд.
+F1 – запуск/зупинка таймера. Розмір шрифту таймера збільшується після 20 і 100 секунд, а колір шрифту стає червоним після 25 і 180 секунд (він стає знову білим після 100 секунд). Таймер запускається завжди з 0.
+XMouse1 - Те ж саме, що й F1.
+XMouse2 - Відновити таймер, якщо він був зупинений випадково. Таймер продовжиться, враховуючи також увесь час, після його деактивації.
 
 F2 – зміна мови. Наразі доступні лише п’ять мов: українська, англійська, італійська, французька, російська. Ви можете перемикати мови по колу, натискаючи F2. Також ви можете додати нову мову – просто створіть новий TXT-файл у папці Languages та заповніть його новим перекладом. Остання активована мова буде вибрана автоматично під час наступного запуску.
 
