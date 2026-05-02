@@ -609,6 +609,7 @@ namespace PhasmoAssist
 #else
                         case Key.F5: F5(); break;
 #endif
+                        case Key.F6: F6(); break;
                         default:
                             {
                                 var n = key - Key.D0;
@@ -813,6 +814,24 @@ namespace PhasmoAssist
             else
             {
                 About.Visibility = Visibility.Visible;
+                Randomizer.Visibility = Visibility.Collapsed;
+                Activate();
+                Focus();
+            }
+        }
+
+        private void F6()
+        {
+            var visible = Randomizer.Visibility == Visibility.Visible;
+            if (visible)
+            {
+                Randomizer.Visibility = Visibility.Collapsed;
+                FocusPhasmaphobia();
+            }
+            else
+            {
+                Randomizer.Visibility = Visibility.Visible;
+                About.Visibility = Visibility.Collapsed;
                 Activate();
                 Focus();
             }
@@ -1115,5 +1134,113 @@ namespace PhasmoAssist
         const int WS_EX_TOOLWINDOW = 0x00000080;
         const int WS_EX_APPWINDOW = 0x00040000;
         #endregion
+
+        private void MapSizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn ||
+                string.IsNullOrWhiteSpace(btn.Tag?.ToString()))
+            {
+                return;
+            }
+
+            var split = btn.Tag.ToString()!.Split(',');
+            
+            var tags = new List<byte>();
+            foreach (var item in split)
+            {
+                byte.TryParse(item, out var value);
+                tags.Add(value);
+            }
+
+            var items = new List<ListBoxItem>();
+            var enabled = false;
+
+            foreach (var child in MapsList.Items)
+            {
+                if (child is not ListBoxItem item)
+                {
+                    continue;
+                }
+
+                item.Foreground = Brushes.Black;
+
+                if (string.IsNullOrWhiteSpace(item.Tag?.ToString()) ||
+                    !byte.TryParse(item.Tag.ToString(), out var tag) ||
+                    !tags.Contains(tag))
+                {
+                    continue;
+                }
+
+                items.Add(item);
+                if (item.IsSelected)
+                {
+                    enabled = true;
+                }
+            }
+
+            if (items.Any())
+            {
+                items.ForEach(p => p.IsSelected = !enabled);
+            }
+        }
+
+        private CheckBox[]? _cbs = null;
+        private TextBlock[]? _tbs = null;
+
+        private void RndButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_cbs == null)
+            {
+                _cbs = new[]
+                {
+                    cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13, cb14, cb15, cb16, cb17, cb18, cb19, cb20
+                };
+            }
+
+            if (_tbs == null)
+            {
+                _tbs = new[]
+                {
+                    tb0, tb1, tb2, tb3, tb4, tb5, tb6, tb7, tb8, tb9, tb10, tb11, tb12, tb13, tb14, tb15, tb16, tb17, tb18, tb19, tb20
+                };
+            }
+
+            var items = new List<ListBoxItem>();
+            foreach (var child in MapsList.Items)
+            {
+                if (child is not ListBoxItem item)
+                {
+                    continue;
+                }
+
+                item.Foreground = Brushes.Black;
+
+                if (!item.IsSelected)
+                {
+                    continue;
+                }
+
+                items.Add(item);
+            }
+
+            var rnd = new Random(DateTime.Now.Millisecond);
+
+            if (items.Count > 0)
+            {
+                var max = items.Count;
+                var mapId = rnd.Next(0, max);
+                items[mapId].Foreground = Brushes.Green;
+            }
+
+            for (var i = 0; i < _cbs.Length; ++i)
+            {
+                var isChecked = rnd.Next(0, 2) == 1;
+                _cbs[i].IsChecked = isChecked;
+                
+                _tbs[i].Text = isChecked
+                    ? rnd.Next(1, 4).ToString()
+                    : string.Empty;
+            }
+        }
     }
 }

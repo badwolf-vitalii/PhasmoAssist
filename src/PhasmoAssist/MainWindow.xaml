@@ -90,7 +90,7 @@
                     <TextBlock FontSize="15"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               Text="v. 1.4.0.1 - 2026"/>
+                               Text="v. 1.5.0.0 - 2026"/>
                     <Border Height="15"/>
                     <TextBlock x:Name="tbBlink1"
                                FontSize="18"
@@ -333,6 +333,603 @@
                        Margin="0 55 20 0"
                        Tag="https://discord.gg/JY2MNDbp"
                        MouseDown="Image_MouseDown"/>
+            </Grid>
+        </Border>
+
+        <Border x:Name="Randomizer"
+                Margin="30"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                CornerRadius="30"
+                BorderBrush="White"
+                Background="#AA000000"
+                MinWidth="450"
+                MinHeight="400"
+                Visibility="Collapsed"
+                BorderThickness="1">
+            <Grid Margin="15 10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <GroupBox Grid.Row="0"
+                          HorizontalAlignment="Stretch">
+                    <GroupBox.Header>
+                        <TextBlock Text=" Мапи "
+                                   Foreground="White"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Padding="0"/>
+                    </GroupBox.Header>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Row="0" Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                Padding="10 2"
+                                FontSize="16"
+                                Content="Усі"
+                                Tag="0,1,2"
+                                Click="MapSizeButton_Click"/>
+
+                        <Button Grid.Row="0" Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                Padding="10 2"
+                                FontSize="16"
+                                Content="Малі"
+                                Tag="0"
+                                Click="MapSizeButton_Click"/>
+
+                        <Button Grid.Row="1" Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                Padding="10 2"
+                                FontSize="16"
+                                Content="Середні"
+                                Tag="1"
+                                Click="MapSizeButton_Click"/>
+
+                        <Button Grid.Row="2" Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                Padding="10 2"
+                                FontSize="16"
+                                Content="Великі"
+                                Tag="2"
+                                Click="MapSizeButton_Click"/>
+
+                        <ListBox Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                                 x:Name="MapsList"
+                                 SelectionMode="Multiple">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <TextBlock Text="{TemplateBinding Content}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="TextDecorations" Value="{x:Null}" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="FontSize" Value="18" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                             Value="False">
+                                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                    <Setter Property="FontWeight" Value="Normal" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBoxItem Tag="0" Content="10 Ridgeview Court"/>
+                            <ListBoxItem Tag="0" Content="13 Willow Street"/>
+                            <ListBoxItem Tag="0" Content="42 Edgefield Road"/>
+                            <ListBoxItem Tag="0" Content="6 Tanglewood Drive"/>
+                            <ListBoxItem Tag="0" Content="Camp Woodwind"/>
+                            <ListBoxItem Tag="0" Content="Grafton Farmhouse"/>
+
+                            <ListBoxItem Tag="1" Content="Bleasdale Farmhouse"/>
+                            <ListBoxItem Tag="1" Content="Maple Lodge Campsite"/>
+                            <ListBoxItem Tag="1" Content="Point Hope"/>
+                            <ListBoxItem Tag="1" Content="Prison"/>
+
+                            <ListBoxItem Tag="2" Content="Brownstone High School"/>
+                            <ListBoxItem Tag="2" Content="Sunny Meadows Mental Institution"/>
+                            <ListBoxItem Tag="2" Content="Sunny Meadows Restricted"/>
+                        </ListBox>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1"
+                          Padding="3"
+                          HorizontalAlignment="Stretch">
+                    <GroupBox.Header>
+                        <TextBlock Text=" Інструменти "
+                                   Foreground="White"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Padding="0"/>
+                    </GroupBox.Header>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="0"
+                                  x:Name="cb0"
+                                  Content="Проектор D.O.T.S."/>
+
+                        <CheckBox Grid.Row="1" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="1"
+                                  x:Name="cb1"
+                                  Content="Детектор ЕМП"/>
+
+                        <CheckBox Grid.Row="2" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="2"
+                                  x:Name="cb2"
+                                  Content="Ліхтарик"/>
+
+                        <CheckBox Grid.Row="3" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="3"
+                                  x:Name="cb3"
+                                  Content="Книга примарних записів"/>
+
+                        <CheckBox Grid.Row="4" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="4"
+                                  x:Name="cb4"
+                                  Content="Радіоприймач"/>
+
+                        <CheckBox Grid.Row="5" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="5"
+                                  x:Name="cb5"
+                                  Content="Термометр"/>
+
+                        <CheckBox Grid.Row="6" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="6"
+                                  x:Name="cb6"
+                                  Content="Ультрафіолетове світло"/>
+
+                        <CheckBox Grid.Row="7" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="7"
+                                  x:Name="cb7"
+                                  Content="Відеокамера"/>
+
+                        <CheckBox Grid.Row="8" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="8"
+                                  x:Name="cb8"
+                                  Content="Вогняне світло"/>
+
+                        <CheckBox Grid.Row="9" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="9"
+                                  x:Name="cb9"
+                                  Content="Спорядження на голову"/>
+
+                        <CheckBox Grid.Row="10" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="10"
+                                  x:Name="cb10"
+                                  Content="Датчик руху"/>
+
+                        <CheckBox Grid.Row="11" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="11"
+                                  x:Name="cb11"
+                                  Content="Параболічний мікрофон"/>
+
+                        <CheckBox Grid.Row="12" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="12"
+                                  x:Name="cb12"
+                                  Content="Фотокамера"/>
+
+                        <CheckBox Grid.Row="13" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="13"
+                                  x:Name="cb13"
+                                  Content="Сіль"/>
+
+                        <CheckBox Grid.Row="14" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="14"
+                                  x:Name="cb14"
+                                  Content="Звуковий реєстратор"/>
+
+                        <CheckBox Grid.Row="15" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="15"
+                                  x:Name="cb15"
+                                  Content="Датчик звуку"/>
+
+                        <CheckBox Grid.Row="16" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="16"
+                                  x:Name="cb16"
+                                  Content="Штатив"/>
+
+                        <CheckBox Grid.Row="17" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="17"
+                                  x:Name="cb17"
+                                  Content="Запалювач"/>
+
+                        <CheckBox Grid.Row="18" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="18"
+                                  x:Name="cb18"
+                                  Content="Пахощі"/>
+
+                        <CheckBox Grid.Row="19" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="19"
+                                  x:Name="cb19"
+                                  Content="Заспокійливе"/>
+
+                        <CheckBox Grid.Row="20" Grid.Column="2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  Padding="10 -4 10 0"
+                                  FontSize="18"
+                                  Foreground="White"
+                                  Background="White"
+                                  Tag="20"
+                                  x:Name="cb20"
+                                  Content="Розп’яття"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="0"
+                                   x:Name="tb0"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="1"
+                                   x:Name="tb1"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="2"
+                                   x:Name="tb2"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="3"
+                                   x:Name="tb3"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="4"
+                                   x:Name="tb4"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="5"
+                                   x:Name="tb5"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="6" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="6"
+                                   x:Name="tb6"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="7" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="7"
+                                   x:Name="tb7"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="8" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="8"
+                                   x:Name="tb8"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="9" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="9"
+                                   x:Name="tb9"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="10" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="10"
+                                   x:Name="tb10"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="11" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="11"
+                                   x:Name="tb11"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="12" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="12"
+                                   x:Name="tb12"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="13" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="13"
+                                   x:Name="tb13"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="14" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="14"
+                                   x:Name="tb14"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="15" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="15"
+                                   x:Name="tb15"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="16" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="16"
+                                   x:Name="tb16"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="17" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="17"
+                                   x:Name="tb17"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="18" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="18"
+                                   x:Name="tb18"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="19" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="19"
+                                   x:Name="tb19"
+                                   Text="1"/>
+
+                        <TextBlock Grid.Row="20" Grid.Column="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   FontSize="18"
+                                   Foreground="White"
+                                   Tag="20"
+                                   x:Name="tb20"
+                                   Text="1"/>
+                    </Grid>
+                </GroupBox>
+
+                <Button Grid.Row="2"
+                        Margin="0 5"
+                        FontSize="18"
+                        Content="Згенерувати"
+                        Click="RndButton_Click"/>
             </Grid>
         </Border>
     </Grid>
