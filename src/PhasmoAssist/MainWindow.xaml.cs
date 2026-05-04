@@ -31,7 +31,7 @@ namespace PhasmoAssist
         private bool _isFocused { get; set; } // this process or the TargetProcessName is focused
         private bool _isTimerReset { get; set; }
         private string? _languageFileName { get; set; }
-        private string[]? _language { get; set; }
+        private static string[]? _language { get; set; }
         private int _timerFontSizeInitial = 35;
         private int _timerFontSizeAbove20 = 50;
         private int _evidencesFontSize = 35;
@@ -54,7 +54,7 @@ namespace PhasmoAssist
         private Dictionary<EEvidence, bool> _evidences = new Dictionary<EEvidence, bool>();
         private Dictionary<EEvidence, bool> _evidencesBackup = new Dictionary<EEvidence, bool>();
         
-        private Dictionary<Key, int> _keys = new Dictionary<Key, int>();
+        private static Dictionary<Key, int> _keys = new Dictionary<Key, int>();
 
         public MainWindow()
         {
@@ -191,6 +191,26 @@ namespace PhasmoAssist
             var root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var langFileName = Path.Combine(root!, "lang.inf");
             File.WriteAllText(langFileName, fileName);
+
+            try
+            {
+                if (_cbs == null)
+                {
+                    _cbs = new[]
+                    {
+                        cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13, cb14, cb15, cb16, cb17, cb18, cb19, cb20
+                    };
+                }
+                tbMaps.Text = " " + _language[35] + " ";
+                tbInstruments.Text = " " + _language[36] + " ";
+                for (var i = 0; i < _cbs.Length; ++i)
+                {
+                    _cbs[i].Content = _language[i + 37];
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void LoadConfig()
@@ -252,7 +272,7 @@ namespace PhasmoAssist
 
             tbAssistTimer.FontSize = _timerFontSizeInitial;
             tbEvidences.FontSize = _evidencesFontSize;
-            tbGhosts.FontSize = _ghostsFontSize;
+            //tbGhosts.FontSize = _ghostsFontSize;
 
             var cfg = new[]
             {
@@ -576,9 +596,9 @@ namespace PhasmoAssist
             _keys.Add(Key.M, 27);
         }
 
-        private Key GetKey(int id) => _keys.Keys.FirstOrDefault(p => _keys[p] == id);
+        private static Key GetKey(int id) => _keys.Keys.FirstOrDefault(p => _keys[p] == id);
 
-        private string GetWord(int id)
+        private static string GetWord(int id)
         {
             if (_language != null && _language.Length > id)
             {
@@ -887,11 +907,13 @@ namespace PhasmoAssist
             if (!_evidences.Where(p => p.Value).Select(p => p.Key).Any())
             {
                 tbEvidences.Text = string.Empty;
-                tbGhosts.Text = string.Empty;
+                //tbGhosts.Text = string.Empty;
+                wpGhosts.Children.Clear();
                 tbGhostsHidden.Text = string.Empty;
                 tbEvidences.Visibility = Visibility.Collapsed;
-                tbGhosts.Visibility = Visibility.Collapsed;
-                tbGhosts.FontSize = _ghostsFontSize;
+                //tbGhosts.Visibility = Visibility.Collapsed;
+                //tbGhosts.FontSize = _ghostsFontSize;
+                wpGhosts.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -922,9 +944,13 @@ namespace PhasmoAssist
             if (filter.Any() || filterHidden.Any())
             {
                 var ghosts = new List<string>();
+                var ghostsDetails = new List<GhostDetails>();
                 foreach (var ghost in filter)
                 {
                     ghosts.Add(Translate(ghost.GhostType));
+                    var gd = new GhostDetails(ghost);
+                    gd.FontSize = _ghostsFontSize;
+                    ghostsDetails.Add(gd);
                 }
                 var ghostsHidden = new List<string>();
                 foreach (var ghost in filterHidden)
@@ -933,28 +959,48 @@ namespace PhasmoAssist
                 }
                 var left = string.Join (" - ", ghosts);
                 var right = string.Join (" - ", ghostsHidden);
-                tbGhosts.Text = left;
+                //tbGhosts.Text = left;
                 tbGhostsHidden.Text = right;
-                if (ghosts.Count == 1)
+                //if (ghosts.Count == 1)
+                //{
+                //    tbGhosts.FontSize = _ghostsFontSizeIdentified;
+                //}
+                //else
+                //{
+                //    tbGhosts.FontSize = _ghostsFontSize;
+                //}
+                if (ghostsDetails.Count == 1)
                 {
-                    tbGhosts.FontSize = _ghostsFontSizeIdentified;
+                    ghostsDetails.First().FontSize = _ghostsFontSizeIdentified;
                 }
                 else
                 {
-                    tbGhosts.FontSize = _ghostsFontSize;
+                    ghostsDetails.ForEach(p => p.FontSize = _ghostsFontSize);
+                }
+
+                    wpGhosts.Children.Clear();
+                for (var i = 0; i < ghostsDetails.Count; ++i)
+                {
+                    if (i >= ghostsDetails.Count - 1)
+                    {
+                        ghostsDetails[i].ShowDash = false;
+                    }
+                    wpGhosts.Children.Add(ghostsDetails[i]);
                 }
             }
             else
             {
-                tbGhosts.Text = string.Empty;
-                tbGhosts.FontSize = _ghostsFontSize;
+                //tbGhosts.Text = string.Empty;
+                //tbGhosts.FontSize = _ghostsFontSize;
+                wpGhosts.Children.Clear();
             }
-            tbGhosts.Visibility = string.IsNullOrWhiteSpace(tbGhosts.Text) ? Visibility.Collapsed : Visibility.Visible;
+            //tbGhosts.Visibility = string.IsNullOrWhiteSpace(tbGhosts.Text) ? Visibility.Collapsed : Visibility.Visible;
+            wpGhosts.Visibility = wpGhosts.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private string Translate(EEvidence evidence) => $"{(int)evidence + 1}. " + GetWord((int)evidence);
 
-        private string Translate(EGhost ghost)
+        public static string Translate(EGhost ghost)
         {
             var id = string.Empty;
             var n = (int)ghost;
