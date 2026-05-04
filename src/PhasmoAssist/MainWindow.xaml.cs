@@ -1276,6 +1276,18 @@ namespace PhasmoAssist
                     ? rnd.Next(1, 4).ToString()
                     : string.Empty;
             }
+
+            if (!(cb17.IsChecked.HasValue && cb17.IsChecked.Value) && ((cb8.IsChecked.HasValue && cb8.IsChecked.Value) || (cb18.IsChecked.HasValue && cb18.IsChecked.Value)))
+            {
+                cb17.IsChecked = true;
+                tb17.Text = rnd.Next(1, 4).ToString();
+            }
+
+            if (!(cb7.IsChecked.HasValue && cb7.IsChecked.Value))
+            {
+                cb16.IsChecked = false;
+                tb16.Text = string.Empty;
+            }
         }
     }
 }
