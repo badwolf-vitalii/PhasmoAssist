@@ -272,7 +272,6 @@ namespace PhasmoAssist
 
             tbAssistTimer.FontSize = _timerFontSizeInitial;
             tbEvidences.FontSize = _evidencesFontSize;
-            //tbGhosts.FontSize = _ghostsFontSize;
 
             var cfg = new[]
             {
@@ -907,12 +906,9 @@ namespace PhasmoAssist
             if (!_evidences.Where(p => p.Value).Select(p => p.Key).Any())
             {
                 tbEvidences.Text = string.Empty;
-                //tbGhosts.Text = string.Empty;
                 wpGhosts.Children.Clear();
                 tbGhostsHidden.Text = string.Empty;
                 tbEvidences.Visibility = Visibility.Collapsed;
-                //tbGhosts.Visibility = Visibility.Collapsed;
-                //tbGhosts.FontSize = _ghostsFontSize;
                 wpGhosts.Visibility = Visibility.Collapsed;
                 return;
             }
@@ -959,16 +955,7 @@ namespace PhasmoAssist
                 }
                 var left = string.Join (" - ", ghosts);
                 var right = string.Join (" - ", ghostsHidden);
-                //tbGhosts.Text = left;
                 tbGhostsHidden.Text = right;
-                //if (ghosts.Count == 1)
-                //{
-                //    tbGhosts.FontSize = _ghostsFontSizeIdentified;
-                //}
-                //else
-                //{
-                //    tbGhosts.FontSize = _ghostsFontSize;
-                //}
                 if (ghostsDetails.Count == 1)
                 {
                     ghostsDetails.First().FontSize = _ghostsFontSizeIdentified;
@@ -990,11 +977,8 @@ namespace PhasmoAssist
             }
             else
             {
-                //tbGhosts.Text = string.Empty;
-                //tbGhosts.FontSize = _ghostsFontSize;
                 wpGhosts.Children.Clear();
             }
-            //tbGhosts.Visibility = string.IsNullOrWhiteSpace(tbGhosts.Text) ? Visibility.Collapsed : Visibility.Visible;
             wpGhosts.Visibility = wpGhosts.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
