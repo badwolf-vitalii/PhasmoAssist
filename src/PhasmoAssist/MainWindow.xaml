@@ -47,12 +47,16 @@
                            TextWrapping="Wrap"
                            Foreground="White"/>
 
-                <TextBlock x:Name="tbGhosts"
+                <!--<TextBlock x:Name="tbGhosts"
                            Grid.Row="1"
                            FontSize="25"
                            TextWrapping="Wrap"
-                           Foreground="White"/>
+                           Visibility="Collapsed"
+                           Foreground="White"/>-->
 
+                <WrapPanel x:Name="wpGhosts"
+                           Grid.Row="1"/>
+                
                 <TextBlock x:Name="tbGhostsHidden"
                            Grid.Row="2"
                            FontSize="25"
@@ -361,6 +365,7 @@
                                    Foreground="White"
                                    FontSize="18"
                                    FontWeight="Bold"
+                                   x:Name="tbMaps"
                                    Padding="0"/>
                     </GroupBox.Header>
 
@@ -470,6 +475,7 @@
                                    Foreground="White"
                                    FontSize="18"
                                    FontWeight="Bold"
+                                   x:Name="tbInstruments"
                                    Padding="0"/>
                     </GroupBox.Header>
 
@@ -510,7 +516,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="0"
+                                  Tag="Проектор D.O.T.S."
                                   x:Name="cb0"
                                   Content="Проектор D.O.T.S."/>
 
@@ -521,7 +527,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="1"
+                                  Tag="Детектор ЕМП"
                                   x:Name="cb1"
                                   Content="Детектор ЕМП"/>
 
@@ -532,7 +538,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="2"
+                                  Tag="Ліхтарик"
                                   x:Name="cb2"
                                   Content="Ліхтарик"/>
 
@@ -543,7 +549,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="3"
+                                  Tag="Книга примарних записів"
                                   x:Name="cb3"
                                   Content="Книга примарних записів"/>
 
@@ -554,7 +560,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="4"
+                                  Tag="Радіоприймач"
                                   x:Name="cb4"
                                   Content="Радіоприймач"/>
 
@@ -565,7 +571,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="5"
+                                  Tag="Термометр"
                                   x:Name="cb5"
                                   Content="Термометр"/>
 
@@ -576,7 +582,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="6"
+                                  Tag="Ультрафіолетове світло"
                                   x:Name="cb6"
                                   Content="Ультрафіолетове світло"/>
 
@@ -587,7 +593,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="7"
+                                  Tag="Відеокамера"
                                   x:Name="cb7"
                                   Content="Відеокамера"/>
 
@@ -598,7 +604,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="8"
+                                  Tag="Вогняне світло"
                                   x:Name="cb8"
                                   Content="Вогняне світло"/>
 
@@ -609,7 +615,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="9"
+                                  Tag="Спорядження на голову"
                                   x:Name="cb9"
                                   Content="Спорядження на голову"/>
 
@@ -620,7 +626,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="10"
+                                  Tag="Датчик руху"
                                   x:Name="cb10"
                                   Content="Датчик руху"/>
 
@@ -631,7 +637,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="11"
+                                  Tag="Параболічний мікрофон"
                                   x:Name="cb11"
                                   Content="Параболічний мікрофон"/>
 
@@ -642,7 +648,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="12"
+                                  Tag="Фотокамера"
                                   x:Name="cb12"
                                   Content="Фотокамера"/>
 
@@ -653,7 +659,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="13"
+                                  Tag="Сіль"
                                   x:Name="cb13"
                                   Content="Сіль"/>
 
@@ -664,7 +670,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="14"
+                                  Tag="Звуковий реєстратор"
                                   x:Name="cb14"
                                   Content="Звуковий реєстратор"/>
 
@@ -675,7 +681,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="15"
+                                  Tag="Датчик звуку"
                                   x:Name="cb15"
                                   Content="Датчик звуку"/>
 
@@ -686,7 +692,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="16"
+                                  Tag="Штатив"
                                   x:Name="cb16"
                                   Content="Штатив"/>
 
@@ -697,7 +703,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="17"
+                                  Tag="Запалювач"
                                   x:Name="cb17"
                                   Content="Запалювач"/>
 
@@ -708,7 +714,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="18"
+                                  Tag="Пахощі"
                                   x:Name="cb18"
                                   Content="Пахощі"/>
 
@@ -719,7 +725,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="19"
+                                  Tag="Заспокійливе"
                                   x:Name="cb19"
                                   Content="Заспокійливе"/>
 
@@ -730,7 +736,7 @@
                                   FontSize="18"
                                   Foreground="White"
                                   Background="White"
-                                  Tag="20"
+                                  Tag="Розп’яття"
                                   x:Name="cb20"
                                   Content="Розп’яття"/>
 
