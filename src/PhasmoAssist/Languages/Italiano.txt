@@ -1,4 +1,4 @@
-D.O.T.S.
+﻿D.O.T.S.
 EMF 5
 Temperatura di Congelamento
 Sfere di Luce
@@ -32,3 +32,26 @@ Thaye
 Dayan
 Obambo
 Gallu
+Mappe
+Strumenti
+Puntatore D.O.T.S.
+Lettore EMF
+Torcia elettrica
+Libro spiritico
+Spirit box
+Termometro
+Luca UV
+Videocamera
+Lumi
+Equipaggiamento della testa
+Sensore di movimento
+Microfono direzionale
+Fotocamera
+Sale
+Registratore di suoni
+Sensore sonoro
+Treppiede
+Accenditore
+Incenso
+Rimedi per la sanità mentale
+Crocifisso
