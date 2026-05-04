@@ -32,6 +32,11 @@ Thayé
 Dayan
 Obambo
 Gallu
+Toutes
+Petite
+Moyenne
+Grande
+Générer
 Cartes
 Instruments
 Projecteur D.O.T.S.

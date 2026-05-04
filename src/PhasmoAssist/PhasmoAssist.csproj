@@ -8,9 +8,9 @@
     <UseWPF>true</UseWPF>
     <PackageIcon></PackageIcon>
     <ApplicationIcon>badwolf.ico</ApplicationIcon>
-	<Version>1.6.0.1</Version>
-	<AssemblyVersion>1.6.0.1</AssemblyVersion>
-	<FileVersion>1.6.0.1</FileVersion>
+	<Version>1.6.0.2</Version>
+	<AssemblyVersion>1.6.0.2</AssemblyVersion>
+	<FileVersion>1.6.0.2</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

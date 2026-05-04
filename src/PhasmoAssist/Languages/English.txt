@@ -32,6 +32,11 @@ Thaye
 Dayan
 Obambo
 Gallu
+All
+Small
+Medium
+Large
+Generate
 Maps
 Instruments
 D.O.T.S. projector

@@ -32,6 +32,11 @@ Thaye
 Dayan
 Obambo
 Gallu
+Tutte
+Piccole
+Medie
+Grandi
+Generare
 Mappe
 Strumenti
 Puntatore D.O.T.S.

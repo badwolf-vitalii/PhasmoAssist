@@ -87,7 +87,7 @@
                     <TextBlock FontSize="15"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               Text="v. 1.6.0.1 - 2026"/>
+                               Text="v. 1.6.0.2 - 2026"/>
                     <Border Height="15"/>
                     <TextBlock x:Name="tbBlink1"
                                FontSize="18"
@@ -381,6 +381,7 @@
                                 Padding="10 2"
                                 FontSize="16"
                                 Content="Усі"
+                                x:Name="btnAllMaps"
                                 Tag="0,1,2"
                                 Click="MapSizeButton_Click"/>
 
@@ -390,6 +391,7 @@
                                 Padding="10 2"
                                 FontSize="16"
                                 Content="Малі"
+                                x:Name="btnSmallMaps"
                                 Tag="0"
                                 Click="MapSizeButton_Click"/>
 
@@ -399,6 +401,7 @@
                                 Padding="10 2"
                                 FontSize="16"
                                 Content="Середні"
+                                x:Name="btnMediumMaps"
                                 Tag="1"
                                 Click="MapSizeButton_Click"/>
 
@@ -408,6 +411,7 @@
                                 Padding="10 2"
                                 FontSize="16"
                                 Content="Великі"
+                                x:Name="btnLargeMaps"
                                 Tag="2"
                                 Click="MapSizeButton_Click"/>
 
@@ -928,6 +932,7 @@
                         Margin="0 5"
                         FontSize="18"
                         Content="Згенерувати"
+                        x:Name="btnRandomize"
                         Click="RndButton_Click"/>
             </Grid>
         </Border>
