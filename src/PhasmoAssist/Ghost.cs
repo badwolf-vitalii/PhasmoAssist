@@ -2,7 +2,7 @@
 
 namespace PhasmoAssist
 {
-    internal class Ghost
+    public class Ghost
     {
         public EGhost GhostType { get; set; }
         public List<EEvidence>? Evidences { get; set; }
