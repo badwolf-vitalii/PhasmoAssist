@@ -201,11 +201,11 @@ namespace PhasmoAssist
                         cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13, cb14, cb15, cb16, cb17, cb18, cb19, cb20
                     };
                 }
-                tbMaps.Text = " " + _language[35] + " ";
-                tbInstruments.Text = " " + _language[36] + " ";
+                tbMaps.Text = " " + _language[34] + " ";
+                tbInstruments.Text = " " + _language[35] + " ";
                 for (var i = 0; i < _cbs.Length; ++i)
                 {
-                    _cbs[i].Content = _language[i + 37];
+                    _cbs[i].Content = _language[i + 36];
                 }
             }
             catch
