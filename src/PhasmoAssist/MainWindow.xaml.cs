@@ -31,6 +31,7 @@ namespace PhasmoAssist
         private bool _isVisible { get; set; }
         private bool _isTemporarilyHidden { get; set; } // hidden and waiting for the TargetProcessName
         private bool _isFocused { get; set; } // this process or the TargetProcessName is focused
+        private bool _isGameTimerReset { get; set; }
         private bool _isTimerReset { get; set; }
         private string? _languageFileName { get; set; }
         private static string[]? _language { get; set; }
@@ -39,9 +40,11 @@ namespace PhasmoAssist
         private int _evidencesFontSize = 35;
         private int _ghostsFontSize = 35;
         private int _ghostsFontSizeIdentified = 60;
+        private OffsetStopwatch _swGame { get; set; }
         private OffsetStopwatch _sw { get; set; }
         private OffsetStopwatch _sw2 { get; set; }
         private TimeSpan _elapsedSw { get; set; }
+        private CancellationTokenSource? _gameTimerToken { get; set; }
         private CancellationTokenSource? _assistTimerToken { get; set; }
         private CancellationTokenSource? _blinkTextToken { get; set; }
         
@@ -70,6 +73,7 @@ namespace PhasmoAssist
             InitializeComponent();
 
             _isVisible = true;
+            _isGameTimerReset = true;
             _isTimerReset = true;
             
             Hide();
@@ -93,6 +97,7 @@ namespace PhasmoAssist
             LoadEvidences();
             LoadKeys();
 
+            _swGame = new OffsetStopwatch();
             _sw = new OffsetStopwatch();
             _sw2 = new OffsetStopwatch();
             _keyboardHook = new GlobalInputHook();
@@ -636,6 +641,7 @@ namespace PhasmoAssist
                         case Key.F5: F5(); break;
 #endif
                         case Key.F6: F6(); break;
+                        case Key.Delete: Delete(); break;
                         default:
                             {
                                 var n = key - Key.D0;
@@ -863,6 +869,25 @@ namespace PhasmoAssist
             }
         }
 
+        private void Delete()
+        {
+            if (_isGameTimerReset)
+            {
+                _isGameTimerReset = false;
+                _gameTimerToken?.Cancel();
+                _gameTimerToken = new CancellationTokenSource();
+                Task.Run(GameTimer);
+                _swGame.Start();
+                tbGameTime.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _swGame.Reset();
+                _isGameTimerReset = true;
+                tbGameTime.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async Task AssistTimer()
         {
             while (!(_assistTimerToken == null || _assistTimerToken.IsCancellationRequested))
@@ -902,6 +927,25 @@ namespace PhasmoAssist
                     if (_sw.Elapsed.TotalMinutes >= 10)
                     {
                         _assistTimerToken.Cancel();
+                    }
+                });
+                await Task.Delay(100);
+            }
+        }
+
+        private async Task GameTimer()
+        {
+            while (!(_gameTimerToken == null || _gameTimerToken.IsCancellationRequested))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    if (_swGame.Elapsed.Minutes > 0)
+                    {
+                        tbGameTime.Text = _swGame.Elapsed.ToString("mm") + ":" + _swGame.Elapsed.ToString("ss");
+                    }
+                    else
+                    {
+                        tbGameTime.Text = _swGame.Elapsed.ToString("ss");
                     }
                 });
                 await Task.Delay(100);
