@@ -47,7 +47,8 @@ namespace PhasmoAssist
         private CancellationTokenSource? _gameTimerToken { get; set; }
         private CancellationTokenSource? _assistTimerToken { get; set; }
         private CancellationTokenSource? _blinkTextToken { get; set; }
-        
+        private GameStatistic _statistic {  get; set; }
+
         private Key _shortcutKet
         {
             get => GlobalInputHook.ShortcutKey;
@@ -103,6 +104,8 @@ namespace PhasmoAssist
             _keyboardHook = new GlobalInputHook();
             _keyboardHook.KeyPressed += OnGlobalKeyPressed;
             _keyboardHook.MouseButtonChanged += OnMouseButtonChanged;
+
+            _statistic = new GameStatistic();
 
 #if RELEASE
             LaunchTheGame();
@@ -874,6 +877,7 @@ namespace PhasmoAssist
             if (_isGameTimerReset)
             {
                 _isGameTimerReset = false;
+                _statistic.Reset();
                 _gameTimerToken?.Cancel();
                 _gameTimerToken = new CancellationTokenSource();
                 Task.Run(GameTimer);
