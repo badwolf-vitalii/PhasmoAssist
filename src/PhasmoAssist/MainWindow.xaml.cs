@@ -21,8 +21,10 @@ namespace PhasmoAssist
     {
 #if DEBUG
         const string TargetProcessName = "Notepad";
+        const bool HideWhenNotActive = false;
 #else
         const string TargetProcessName = "Phasmophobia";
+        const bool HideWhenNotActive = true;
 #endif
 
         private GlobalInputHook _keyboardHook;
@@ -1054,7 +1056,10 @@ namespace PhasmoAssist
             if (!_isTemporarilyHidden && proc == null)
             {
                 _isTemporarilyHidden = true;
-                Hide();
+                if (HideWhenNotActive)
+                {
+                    Hide();
+                }
             }
             else if (_isTemporarilyHidden && _isVisible && proc != null)
             {
@@ -1076,7 +1081,10 @@ namespace PhasmoAssist
 
             if (!proc1Focused && !proc2Focused)
             {
-                Hide();
+                if (HideWhenNotActive)
+                {
+                    Hide();
+                }
                 _isFocused = false;
             }
             else
