@@ -645,6 +645,8 @@ namespace PhasmoAssist
 #endif
                         case Key.F6: F6(); break;
                         case Key.Delete: Delete(); break;
+                        case Key.Subtract: Minus(); break;
+                        case Key.Add: Plus(); break;
                         default:
                             {
                                 var n = key - Key.D0;
@@ -890,6 +892,16 @@ namespace PhasmoAssist
                 _isGameTimerReset = true;
                 tbGameTime.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void Minus()
+        {
+            ++_statistic.Huntings;
+        }
+
+        private void Plus()
+        {
+            ++ _statistic.GhostEvents;
         }
 
         private async Task AssistTimer()
