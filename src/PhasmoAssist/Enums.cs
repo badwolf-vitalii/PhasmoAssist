@@ -18,6 +18,8 @@
         Yokai,
         Hantu,
         Goryo,
+        Aswang,
+        Kormos,
 
         Myling,
         Onryo,

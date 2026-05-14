@@ -20,6 +20,8 @@ Oni
 Yokai
 Hantu
 Goryo
+Aswang
+Kormos
 Myling
 Onryo
 The Twins

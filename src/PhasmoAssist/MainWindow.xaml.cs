@@ -462,6 +462,26 @@ namespace PhasmoAssist
                 },
                 new Ghost
                 {
+                    GhostType = EGhost.Aswang,
+                    Evidences = new List<EEvidence>
+                    {
+                        EEvidence.DOTS,
+                        EEvidence.FreezingTemperatures,
+                        EEvidence.GhostWriting
+                    }
+                },
+                new Ghost
+                {
+                    GhostType = EGhost.Kormos,
+                    Evidences = new List<EEvidence>
+                    {
+                        EEvidence.GhostOrb,
+                        EEvidence.SpiritBox,
+                        EEvidence.Ultraviolet
+                    }
+                },
+                new Ghost
+                {
                     GhostType = EGhost.Myling,
                     Evidences = new List<EEvidence>
                     {
@@ -594,20 +614,22 @@ namespace PhasmoAssist
             _keys.Add(Key.R, 13);
             _keys.Add(Key.T, 14);
             _keys.Add(Key.Y, 15);
+            _keys.Add(Key.I, 16);
+            _keys.Add(Key.O, 17);
             
-            _keys.Add(Key.A, 16);
-            _keys.Add(Key.S, 17);
-            _keys.Add(Key.D, 18);
-            _keys.Add(Key.F, 19);
-            _keys.Add(Key.G, 20);
-            _keys.Add(Key.H, 21);
+            _keys.Add(Key.A, 18);
+            _keys.Add(Key.S, 19);
+            _keys.Add(Key.D, 20);
+            _keys.Add(Key.F, 21);
+            _keys.Add(Key.G, 22);
+            _keys.Add(Key.H, 23);
             
-            _keys.Add(Key.X, 22);
-            _keys.Add(Key.C, 23);
-            _keys.Add(Key.V, 24);
-            _keys.Add(Key.B, 25);
-            _keys.Add(Key.N, 26);
-            _keys.Add(Key.M, 27);
+            _keys.Add(Key.X, 24);
+            _keys.Add(Key.C, 25);
+            _keys.Add(Key.V, 26);
+            _keys.Add(Key.B, 27);
+            _keys.Add(Key.N, 28);
+            _keys.Add(Key.M, 29);
         }
 
         private static Key GetKey(int id) => _keys.Keys.FirstOrDefault(p => _keys[p] == id);
@@ -644,6 +666,7 @@ namespace PhasmoAssist
                         case Key.F5: F5(); break;
 #endif
                         case Key.F6: F6(); break;
+                        case Key.F7: F7(); break;
                         case Key.Delete: Delete(); break;
                         case Key.Subtract: Minus(); break;
                         case Key.Add: Plus(); break;
@@ -852,6 +875,7 @@ namespace PhasmoAssist
             {
                 About.Visibility = Visibility.Visible;
                 Randomizer.Visibility = Visibility.Collapsed;
+                Statistics.Visibility = Visibility.Collapsed;
                 Activate();
                 Focus();
             }
@@ -869,6 +893,25 @@ namespace PhasmoAssist
             {
                 Randomizer.Visibility = Visibility.Visible;
                 About.Visibility = Visibility.Collapsed;
+                Statistics.Visibility = Visibility.Collapsed;
+                Activate();
+                Focus();
+            }
+        }
+
+        private void F7()
+        {
+            var visible = Statistics.Visibility == Visibility.Visible;
+            if (visible)
+            {
+                Statistics.Visibility = Visibility.Collapsed;
+                FocusPhasmaphobia();
+            }
+            else
+            {
+                Statistics.Visibility = Visibility.Visible;
+                About.Visibility = Visibility.Collapsed;
+                Randomizer.Visibility = Visibility.Collapsed;
                 Activate();
                 Focus();
             }
@@ -880,6 +923,16 @@ namespace PhasmoAssist
             {
                 _isGameTimerReset = false;
                 _statistic.Reset();
+                _statistic.Huntings = 0;
+                _statistic.GhostEvents = 0;
+                _statistic.ShadeGhostEvents = 0;
+                tbHuntings.Text = "0";
+                tbGhostEvents.Text = "0";
+                tbShadeGhostEvents.Text = "0";
+                tbSingingGhostEvents.Text = "0";
+                cbChangingLocation.IsChecked = false;
+                cbFuseBoxOff.IsChecked = false;
+                cbMistForm.IsChecked = false;
                 _gameTimerToken?.Cancel();
                 _gameTimerToken = new CancellationTokenSource();
                 Task.Run(GameTimer);
@@ -894,15 +947,9 @@ namespace PhasmoAssist
             }
         }
 
-        private void Minus()
-        {
-            ++_statistic.Huntings;
-        }
+        private void Minus() => AddHuntingButton_Click(null, null);
 
-        private void Plus()
-        {
-            ++ _statistic.GhostEvents;
-        }
+        private void Plus() => AddGhostEventButton_Click(null, null);
 
         private async Task AssistTimer()
         {
@@ -992,6 +1039,30 @@ namespace PhasmoAssist
             var filterHidden = new List<Ghost>();
             foreach (var ghost in _ghosts!)
             {
+                if (_statistic.ChangedLocations && ghost.GhostType == EGhost.Goryo)
+                {
+                    filterHidden.Add(ghost);
+                    continue;
+                }
+
+                if (_statistic.FuseBoxTurnedOff && ghost.GhostType == EGhost.Jinn)
+                {
+                    filterHidden.Add(ghost);
+                    continue;
+                }
+
+                if (_statistic.MistForm && ghost.GhostType == EGhost.Oni)
+                {
+                    filterHidden.Add(ghost);
+                    continue;
+                }
+
+                if (_statistic.SingingGhostEvent > 0 && ghost.GhostType == EGhost.Shade)
+                {
+                    filterHidden.Add(ghost);
+                    continue;
+                }
+
                 if (ghost.Check(_evidences))
                 {
                     if (ghost.Hidden)
@@ -1356,6 +1427,86 @@ namespace PhasmoAssist
                 cb16.IsChecked = false;
                 tb16.Text = string.Empty;
             }
+        }
+
+        private void RemoveHuntingButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_statistic.Huntings > 0)
+            {
+                --_statistic.Huntings;
+                tbHuntings.Text = _statistic.Huntings.ToString();
+            }
+        }
+
+        private void AddHuntingButton_Click(object sender, RoutedEventArgs e)
+        {
+            ++_statistic.Huntings;
+            tbHuntings.Text = _statistic.Huntings.ToString();
+        }
+
+        private void RemoveGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_statistic.GhostEvents > 0)
+            {
+                --_statistic.GhostEvents;
+                tbGhostEvents.Text = _statistic.GhostEvents.ToString();
+            }
+        }
+
+        private void AddGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            ++_statistic.GhostEvents;
+            tbGhostEvents.Text = _statistic.GhostEvents.ToString();
+        }
+
+        private void RemoveShadeGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_statistic.ShadeGhostEvents > 0)
+            {
+                --_statistic.ShadeGhostEvents;
+                tbShadeGhostEvents.Text = _statistic.ShadeGhostEvents.ToString();
+            }
+        }
+
+        private void AddShadeGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            ++_statistic.ShadeGhostEvents;
+            tbShadeGhostEvents.Text = _statistic.ShadeGhostEvents.ToString();
+        }
+
+        private void RemoveSingingGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_statistic.SingingGhostEvent > 0)
+            {
+                --_statistic.SingingGhostEvent;
+                tbSingingGhostEvents.Text = _statistic.SingingGhostEvent.ToString();
+                OnEvidencesUpdated();
+            }
+        }
+
+        private void AddSingingGhostEventButton_Click(object sender, RoutedEventArgs e)
+        {
+            ++_statistic.SingingGhostEvent;
+            tbSingingGhostEvents.Text = _statistic.SingingGhostEvent.ToString();
+            OnEvidencesUpdated();
+        }
+
+        private void cbChangingLocationChecked(object sender, RoutedEventArgs e)
+        {
+            _statistic.ChangedLocations = !_statistic.ChangedLocations;
+            OnEvidencesUpdated();
+        }
+
+        private void cbFuseBoxChecked(object sender, RoutedEventArgs e)
+        {
+            _statistic.FuseBoxTurnedOff = !_statistic.FuseBoxTurnedOff;
+            OnEvidencesUpdated();
+        }
+
+        private void cbMistFormChecked(object sender, RoutedEventArgs e)
+        {
+            _statistic.MistForm = !_statistic.MistForm;
+            OnEvidencesUpdated();
         }
     }
 }

@@ -85,6 +85,7 @@ namespace PhasmoAssist
                 case EGhost.Obambo: _vm.Sanity = "10🔻/ 60🔺"; break;
                 case EGhost.Shade: _vm.Sanity = "35"; break;
                 case EGhost.Deogen: _vm.Sanity = "40"; break;
+                case EGhost.Kormos: _vm.Sanity = "50🧍 / 70🏃"; break;
                 default: _vm.Sanity = "50"; break;
             }
         }
