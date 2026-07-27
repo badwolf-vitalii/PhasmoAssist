@@ -27,13 +27,14 @@
         Raiju,
         Obake,
         Mimic,
-
         Moroi,
+
         Deogen,
         Thaye,
         Dayan,
         Obambo,
-        Gallu
+        Gallu,
+        Deildegast
     }
 
     public enum EEvidence

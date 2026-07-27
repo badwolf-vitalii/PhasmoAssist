@@ -602,6 +602,16 @@ namespace PhasmoAssist
                         EEvidence.Ultraviolet,
                         EEvidence.SpiritBox
                     }
+                },
+                new Ghost
+                {
+                    GhostType = EGhost.Deildegast,
+                    Evidences = new List<EEvidence>
+                    {
+                        EEvidence.EMF5,
+                        EEvidence.GhostWriting,
+                        EEvidence.DOTS
+                    }
                 }
             ];
 
@@ -625,13 +635,14 @@ namespace PhasmoAssist
             _keys.Add(Key.F, 21);
             _keys.Add(Key.G, 22);
             _keys.Add(Key.H, 23);
+            _keys.Add(Key.J, 24);
             
-            _keys.Add(Key.X, 24);
-            _keys.Add(Key.C, 25);
-            _keys.Add(Key.V, 26);
-            _keys.Add(Key.B, 27);
-            _keys.Add(Key.N, 28);
-            _keys.Add(Key.M, 29);
+            _keys.Add(Key.X, 25);
+            _keys.Add(Key.C, 26);
+            _keys.Add(Key.V, 27);
+            _keys.Add(Key.B, 28);
+            _keys.Add(Key.N, 29);
+            _keys.Add(Key.M, 30);
         }
 
         private static Key GetKey(int id) => _keys.Keys.FirstOrDefault(p => _keys[p] == id);
