@@ -43,6 +43,7 @@ namespace PhasmoAssist
         private OffsetStopwatch _swGame { get; set; }
         private OffsetStopwatch _sw { get; set; }
         private OffsetStopwatch _sw2 { get; set; }
+        private OffsetStopwatch _swLastTimer { get; set; }
         private TimeSpan _elapsedSw { get; set; }
         private CancellationTokenSource? _gameTimerToken { get; set; }
         private CancellationTokenSource? _assistTimerToken { get; set; }
@@ -101,6 +102,7 @@ namespace PhasmoAssist
             _swGame = new OffsetStopwatch();
             _sw = new OffsetStopwatch();
             _sw2 = new OffsetStopwatch();
+            _swLastTimer = new OffsetStopwatch();
             _keyboardHook = new GlobalInputHook();
             _keyboardHook.KeyPressed += OnGlobalKeyPressed;
             _keyboardHook.MouseButtonChanged += OnMouseButtonChanged;
@@ -823,9 +825,35 @@ namespace PhasmoAssist
                 _sw.Start(elapsedSw + _sw2.Elapsed);
                 _sw2.Reset();
                 tbAssistTimer.Visibility = Visibility.Visible;
+                if (_swLastTimer.Elapsed.Seconds < 1)
+                {
+                    tbLastTimer.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    tbLastTimer.Visibility = Visibility.Visible;
+                }
             }
             else
             {
+                _swLastTimer = new OffsetStopwatch(_sw.Elapsed);
+                if (_swLastTimer.Elapsed.Seconds < 1)
+                {
+                    tbLastTimer.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    tbLastTimer.Visibility = Visibility.Visible;
+
+                    if (_swLastTimer.Elapsed.Minutes > 0)
+                    {
+                        tbLastTimer.Text = _swLastTimer.Elapsed.ToString("mm") + ":" + _swLastTimer.Elapsed.ToString("ss");
+                    }
+                    else
+                    {
+                        tbLastTimer.Text = _swLastTimer.Elapsed.ToString("ss");
+                    }
+                }
                 _elapsedSw = _sw.Elapsed;
                 _sw.Reset();
                 _sw2.Start();

@@ -35,12 +35,21 @@
             <Grid Grid.Column="0"
                   VerticalAlignment="Center"
                   Height="100">
-                <TextBlock x:Name="tbAssistTimer"
-                           Grid.Column="0"
-                           Grid.Row="0"
-                           FontSize="35"
-                           FontWeight="Bold"
-                           Foreground="White"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="tbLastTimer"
+                               Grid.Column="0"
+                               Grid.Row="0"
+                               Margin="0 0 0 -15"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="LightBlue"/>
+                    <TextBlock x:Name="tbAssistTimer"
+                               Grid.Column="0"
+                               Grid.Row="0"
+                               FontSize="35"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                </StackPanel>
             </Grid>
 
             <Grid Grid.Column="1">
