@@ -29,11 +29,11 @@ namespace PhasmoAssist
         private LowLevelInputProc _proc;
 
         private static bool _lShift { get; set; }
-        private static bool _lCtrl { get; set; }
+        private static bool _lAlt { get; set; }
         public static bool LShift => _lShift;
-        public static bool LCtrl => _lCtrl;
+        public static bool LAlt => _lAlt;
         public static Key SpecialKey { get; set; } = Key.LeftShift;
-        public static Key ShortcutKey { get; set; } = Key.LeftCtrl;
+        public static Key ShortcutKey { get; set; } = Key.LeftAlt;
 
         private delegate IntPtr LowLevelInputProc(int nCode, IntPtr wParam, IntPtr lParam);
 
@@ -81,7 +81,7 @@ namespace PhasmoAssist
                 }
                 else if (key == ShortcutKey)
                 {
-                    _lCtrl = true;
+                    _lAlt = true;
                 }
             }
             else if (nCode >= 0 && isUp)
@@ -96,7 +96,7 @@ namespace PhasmoAssist
                 }
                 else if (key == ShortcutKey)
                 {
-                    _lCtrl = false;
+                    _lAlt = false;
                 }
             }
             else if (nCode >= 0)

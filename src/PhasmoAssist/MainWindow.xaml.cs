@@ -56,7 +56,7 @@ namespace PhasmoAssist
             set => GlobalInputHook.SpecialKey = value;
         }
 
-        private Key _shortcutKet
+        private Key _shortcutKey
         {
             get => GlobalInputHook.ShortcutKey;
             set => GlobalInputHook.ShortcutKey = value;
@@ -281,11 +281,11 @@ namespace PhasmoAssist
                             {
                                 if (value == 1)
                                 {
-                                    _shortcutKet = Key.LeftAlt;
+                                    _shortcutKey = Key.LeftAlt;
                                 }
                                 else
                                 {
-                                    _shortcutKet = Key.LeftCtrl;
+                                    _shortcutKey = Key.LeftCtrl;
                                 }
                                 break;
                             }
@@ -310,7 +310,7 @@ namespace PhasmoAssist
                 "[Identified ghost font size]",
                 _ghostsFontSizeIdentified.ToString(),
                 "[Spetial key for shortcuts (1 - LeftAlt, 0 - LeftCtrl, anything else - LeftCtrl)]",
-                (_shortcutKet == Key.LeftAlt ? 1 : 0).ToString(),
+                (_shortcutKey == Key.LeftAlt ? 1 : 0).ToString(),
             };
             File.WriteAllLines(configFileName, cfg);
         }
@@ -665,7 +665,7 @@ namespace PhasmoAssist
 
         private void OnGlobalKeyPressed(Key key)
         {
-            if (key == _specialKey || key == _shortcutKet) return;
+            if (key == _specialKey || key == _shortcutKey) return;
             if ((_isTemporarilyHidden || !_isFocused) && key != Key.F4) return;
             Dispatcher.Invoke(() =>
             {
@@ -730,7 +730,7 @@ namespace PhasmoAssist
                                 {
                                     try
                                     {
-                                        if (GlobalInputHook.LCtrl && n > 0)
+                                        if (GlobalInputHook.LAlt && n > 0)
                                         {
                                             if (n < 10)
                                             {
