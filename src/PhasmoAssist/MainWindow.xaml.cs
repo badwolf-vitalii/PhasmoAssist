@@ -50,6 +50,12 @@ namespace PhasmoAssist
         private CancellationTokenSource? _blinkTextToken { get; set; }
         private GameStatistic _statistic {  get; set; }
 
+        private Key _specialKey
+        {
+            get => GlobalInputHook.SpecialKey;
+            set => GlobalInputHook.SpecialKey = value;
+        }
+
         private Key _shortcutKet
         {
             get => GlobalInputHook.ShortcutKey;
@@ -284,6 +290,7 @@ namespace PhasmoAssist
                                 break;
                             }
                     }
+                    _specialKey = Key.LeftShift;
                 }
             }
 
@@ -658,7 +665,7 @@ namespace PhasmoAssist
 
         private void OnGlobalKeyPressed(Key key)
         {
-            if (key == _shortcutKet) return;
+            if (key == _specialKey || key == _shortcutKet) return;
             if ((_isTemporarilyHidden || !_isFocused) && key != Key.F4) return;
             Dispatcher.Invoke(() =>
             {
@@ -743,7 +750,7 @@ namespace PhasmoAssist
                                             }
                                             OnEvidencesUpdated();
                                         }
-                                        else if (n > 0 && n < 8)
+                                        else if (GlobalInputHook.LShift && n > 0 && n < 8)
                                         {
                                             n = n - 1;
                                             if (_ghosts!.Count > n)

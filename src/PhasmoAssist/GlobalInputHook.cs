@@ -28,8 +28,11 @@ namespace PhasmoAssist
         private IntPtr _hookKId = IntPtr.Zero;
         private LowLevelInputProc _proc;
 
+        private static bool _lShift { get; set; }
         private static bool _lCtrl { get; set; }
+        public static bool LShift => _lShift;
         public static bool LCtrl => _lCtrl;
+        public static Key SpecialKey { get; set; } = Key.LeftShift;
         public static Key ShortcutKey { get; set; } = Key.LeftCtrl;
 
         private delegate IntPtr LowLevelInputProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -72,7 +75,11 @@ namespace PhasmoAssist
                 Key key = KeyInterop.KeyFromVirtualKey(vkCode);
                 KeyPressed?.Invoke(key);
 
-                if (key == ShortcutKey)
+                if (key == SpecialKey)
+                {
+                    _lShift = true;
+                }
+                else if (key == ShortcutKey)
                 {
                     _lCtrl = true;
                 }
@@ -83,7 +90,11 @@ namespace PhasmoAssist
                 int vkCode = Marshal.ReadInt32(lParam);
                 Key key = KeyInterop.KeyFromVirtualKey(vkCode);
 
-                if (key == ShortcutKey)
+                if (key == SpecialKey)
+                {
+                    _lShift = false;
+                }
+                else if (key == ShortcutKey)
                 {
                     _lCtrl = false;
                 }
