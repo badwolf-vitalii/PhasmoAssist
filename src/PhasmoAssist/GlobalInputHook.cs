@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 
@@ -26,10 +28,18 @@ namespace PhasmoAssist
 
         private IntPtr _hookMId = IntPtr.Zero;
         private IntPtr _hookKId = IntPtr.Zero;
-        private LowLevelInputProc _proc;
+        private readonly LowLevelInputProc _proc;
+        private readonly Thread _hookThread;
+        private readonly ManualResetEventSlim _hookReady = new(false);
+        private readonly HashSet<Key> _pressedKeys = new();
+        private uint _hookThreadId;
+        private Exception? _initializationError;
+        private int _disposeRequested;
+        private const uint WM_QUIT = 0x0012;
+        private const uint PM_NOREMOVE = 0;
 
-        private static bool _lShift { get; set; }
-        private static bool _lAlt { get; set; }
+        private static volatile bool _lShift;
+        private static volatile bool _lAlt;
         public static bool LShift => _lShift;
         public static bool LAlt => _lAlt;
         public static Key SpecialKey { get; set; } = Key.LeftShift;
@@ -45,20 +55,80 @@ namespace PhasmoAssist
         public GlobalInputHook()
         {
             _proc = HookCallback;
-            var hooks = SetHook(_proc);
-            _hookMId = hooks.Item1;
-            _hookKId = hooks.Item2;
+            _hookThread = new Thread(RunHookMessageLoop)
+            {
+                IsBackground = true,
+                Name = "PhasmoAssist global input hook"
+            };
+            _hookThread.Start();
+
+            if (!_hookReady.Wait(TimeSpan.FromSeconds(5)))
+            {
+                Dispose();
+                throw new TimeoutException("Global input hooks did not initialize in time.");
+            }
+
+            if (_initializationError != null)
+            {
+                Dispose();
+                throw new InvalidOperationException("Could not install global input hooks.", _initializationError);
+            }
         }
 
-        private Tuple<IntPtr, IntPtr> SetHook(LowLevelInputProc proc)
+        private void RunHookMessageLoop()
         {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule)
+            try
             {
-                IntPtr hModule = GetModuleHandle(curModule.ModuleName);
-                var hookM = SetWindowsHookEx(WH_MOUSE_LL, proc, hModule, 0);
-                var hookK = SetWindowsHookEx(WH_KEYBOARD_LL, proc, hModule, 0);
-                return new Tuple<nint, nint>(hookM, hookK);
+                _hookThreadId = GetCurrentThreadId();
+                PeekMessage(out _, IntPtr.Zero, 0, 0, PM_NOREMOVE);
+
+                var module = GetModuleHandle(null);
+                _hookKId = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, module, 0);
+                if (_hookKId == IntPtr.Zero)
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to install keyboard hook.");
+                }
+
+                _hookMId = SetWindowsHookEx(WH_MOUSE_LL, _proc, module, 0);
+                if (_hookMId == IntPtr.Zero)
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to install mouse hook.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _initializationError = ex;
+            }
+            finally
+            {
+                _hookReady.Set();
+            }
+
+            try
+            {
+                if (_initializationError == null && Volatile.Read(ref _disposeRequested) == 0)
+                {
+                    while (GetMessage(out _, IntPtr.Zero, 0, 0) > 0)
+                    {
+                    }
+                }
+            }
+            finally
+            {
+                if (_hookKId != IntPtr.Zero)
+                {
+                    UnhookWindowsHookEx(_hookKId);
+                    _hookKId = IntPtr.Zero;
+                }
+                if (_hookMId != IntPtr.Zero)
+                {
+                    UnhookWindowsHookEx(_hookMId);
+                    _hookMId = IntPtr.Zero;
+                }
+
+                _pressedKeys.Clear();
+                _lShift = false;
+                _lAlt = false;
             }
         }
 
@@ -73,7 +143,10 @@ namespace PhasmoAssist
                 hook = _hookKId;
                 int vkCode = Marshal.ReadInt32(lParam);
                 Key key = KeyInterop.KeyFromVirtualKey(vkCode);
-                KeyPressed?.Invoke(key);
+                if (_pressedKeys.Add(key))
+                {
+                    KeyPressed?.Invoke(key);
+                }
 
                 if (key == SpecialKey)
                 {
@@ -89,6 +162,7 @@ namespace PhasmoAssist
                 hook = _hookKId;
                 int vkCode = Marshal.ReadInt32(lParam);
                 Key key = KeyInterop.KeyFromVirtualKey(vkCode);
+                _pressedKeys.Remove(key);
 
                 if (key == SpecialKey)
                 {
@@ -136,15 +210,27 @@ namespace PhasmoAssist
                         }
                 }
             }
-            else return IntPtr.Zero;
+            else return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
 
             return CallNextHookEx(hook, nCode, wParam, lParam);
         }
 
         public void Dispose()
         {
-            UnhookWindowsHookEx(_hookKId);
-            UnhookWindowsHookEx(_hookKId);
+            if (Interlocked.Exchange(ref _disposeRequested, 1) != 0)
+            {
+                return;
+            }
+
+            if (_hookThreadId != 0)
+            {
+                PostThreadMessage(_hookThreadId, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+            }
+
+            if (Thread.CurrentThread != _hookThread && _hookThread.IsAlive)
+            {
+                _hookThread.Join(TimeSpan.FromSeconds(2));
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -178,6 +264,32 @@ namespace PhasmoAssist
             IntPtr wParam, IntPtr lParam);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        private static extern IntPtr GetModuleHandle(string? lpModuleName);
+
+        [DllImport("kernel32.dll")]
+        private static extern uint GetCurrentThreadId();
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MSG
+        {
+            public IntPtr hwnd;
+            public uint message;
+            public IntPtr wParam;
+            public IntPtr lParam;
+            public uint time;
+            public POINT pt;
+            public uint lPrivate;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint minFilter, uint maxFilter, uint removeMsg);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetMessage(out MSG lpMsg, IntPtr hWnd, uint minFilter, uint maxFilter);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool PostThreadMessage(uint threadId, uint msg, IntPtr wParam, IntPtr lParam);
     }
 }
