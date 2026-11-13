@@ -45,9 +45,9 @@ namespace PhasmoAssist
         private OffsetStopwatch _sw2 { get; set; }
         private OffsetStopwatch _swLastTimer { get; set; }
         private TimeSpan _elapsedSw { get; set; }
-        private CancellationTokenSource? _gameTimerToken { get; set; }
-        private CancellationTokenSource? _assistTimerToken { get; set; }
-        private CancellationTokenSource? _blinkTextToken { get; set; }
+        private readonly DispatcherTimer _gameTimer;
+        private readonly DispatcherTimer _assistTimer;
+        private readonly DispatcherTimer _blinkTextTimer;
         private GameStatistic _statistic {  get; set; }
 
         private Key _specialKey
@@ -79,6 +79,24 @@ namespace PhasmoAssist
             }
 
             InitializeComponent();
+
+            _assistTimer = new DispatcherTimer(DispatcherPriority.Background)
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            _assistTimer.Tick += (_, _) => UpdateAssistTimer();
+
+            _gameTimer = new DispatcherTimer(DispatcherPriority.Background)
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            _gameTimer.Tick += (_, _) => UpdateGameTimer();
+
+            _blinkTextTimer = new DispatcherTimer(DispatcherPriority.Background)
+            {
+                Interval = TimeSpan.FromSeconds(2)
+            };
+            _blinkTextTimer.Tick += (_, _) => UpdateBlinkText();
 
             _isVisible = true;
             _isGameTimerReset = true;
@@ -173,8 +191,8 @@ namespace PhasmoAssist
 
         private void StartBlinking()
         {
-            _blinkTextToken = new CancellationTokenSource();
-            Task.Run(BlinkText);
+            UpdateBlinkText();
+            _blinkTextTimer.Start();
         }
 
         private void LoadEvidences()
@@ -666,9 +684,27 @@ namespace PhasmoAssist
         private void OnGlobalKeyPressed(Key key)
         {
             if (key == _specialKey || key == _shortcutKey) return;
-            if ((_isTemporarilyHidden || !_isFocused) && key != Key.F4) return;
-            Dispatcher.Invoke(() =>
+
+            // Capture modifiers at the time of the key press, before it is queued for WPF.
+            var shortcutHeld = GlobalInputHook.LAlt;
+            var specialHeld = GlobalInputHook.LShift;
+            var directShortcut = key is Key.F1 or Key.F2 or Key.F4 or Key.F5 or Key.F6
+                or Key.F7 or Key.F8 or Key.F10 or Key.Delete or Key.Subtract
+                or Key.Add or Key.D0 or Key.Oem3;
+
+            // Ignore normal gameplay keys instead of queueing UI work on every key press.
+            if (!directShortcut && (!(shortcutHeld || specialHeld) || !_keys.ContainsKey(key)))
             {
+                return;
+            }
+
+            // Do not block the native low-level hook on the WPF dispatcher.
+            Dispatcher.InvokeAsync(() =>
+            {
+                if ((_isTemporarilyHidden || !_isFocused) && key != Key.F4)
+                {
+                    return;
+                }
                 if (key == Key.F10)
                 {
                     F10();
@@ -730,7 +766,7 @@ namespace PhasmoAssist
                                 {
                                     try
                                     {
-                                        if (GlobalInputHook.LAlt && n > 0)
+                                        if (shortcutHeld && n > 0)
                                         {
                                             if (n < 10)
                                             {
@@ -750,7 +786,7 @@ namespace PhasmoAssist
                                             }
                                             OnEvidencesUpdated();
                                         }
-                                        else if (GlobalInputHook.LShift && n > 0 && n < 8)
+                                        else if (specialHeld && n > 0 && n < 8)
                                         {
                                             n = n - 1;
                                             if (_ghosts!.Count > n)
@@ -768,26 +804,25 @@ namespace PhasmoAssist
                             }
                     }
                 }
-            });
+            }, DispatcherPriority.Input);
         }
 
         private void OnMouseButtonChanged(System.Windows.Input.MouseButton button, bool isDown, GlobalInputHook.POINT pt)
         {
-            if (isDown) return;
-            switch (button)
+            if (isDown || (button != MouseButton.XButton1 && button != MouseButton.XButton2)) return;
+
+            Dispatcher.InvokeAsync(() =>
             {
-                case MouseButton.XButton1:
-                    {
-                        _sw2.Reset();
-                        F1();
-                        break;
-                    }
-                case MouseButton.XButton2:
-                    {
-                        F1(_elapsedSw);
-                        break;
-                    }
-            }
+                if (button == MouseButton.XButton1)
+                {
+                    _sw2.Reset();
+                    F1();
+                }
+                else
+                {
+                    F1(_elapsedSw);
+                }
+            }, DispatcherPriority.Input);
         }
 
         private void LaunchTheGame()
@@ -811,6 +846,9 @@ namespace PhasmoAssist
 
         protected override void OnClosed(EventArgs e)
         {
+            _assistTimer.Stop();
+            _gameTimer.Stop();
+            _blinkTextTimer.Stop();
             _keyboardHook.Dispose();
             base.OnClosed(e);
         }
@@ -835,12 +873,10 @@ namespace PhasmoAssist
             if (_isTimerReset)
             {
                 _isTimerReset = false;
-                _assistTimerToken?.Cancel();
-                _assistTimerToken = new CancellationTokenSource();
                 tbAssistTimer.FontSize = _timerFontSizeInitial;
                 tbAssistTimer.Foreground = Brushes.White;
-                Task.Run(AssistTimer);
                 _sw.Start(elapsedSw + _sw2.Elapsed);
+                _assistTimer.Start();
                 _sw2.Reset();
                 tbAssistTimer.Visibility = Visibility.Visible;
                 if (_swLastTimer.Elapsed.Seconds < 1)
@@ -873,6 +909,7 @@ namespace PhasmoAssist
                     }
                 }
                 _elapsedSw = _sw.Elapsed;
+                _assistTimer.Stop();
                 _sw.Reset();
                 _sw2.Start();
                 _isTimerReset = true;
@@ -905,7 +942,7 @@ namespace PhasmoAssist
 
         private void F4()
         {
-            _blinkTextToken?.Cancel();
+            _blinkTextTimer.Stop();
             Application.Current.Shutdown();
         }
 
@@ -979,14 +1016,13 @@ namespace PhasmoAssist
                 cbChangingLocation.IsChecked = false;
                 cbFuseBoxOff.IsChecked = false;
                 cbMistForm.IsChecked = false;
-                _gameTimerToken?.Cancel();
-                _gameTimerToken = new CancellationTokenSource();
-                Task.Run(GameTimer);
                 _swGame.Start();
+                _gameTimer.Start();
                 tbGameTime.Visibility = Visibility.Visible;
             }
             else
             {
+                _gameTimer.Stop();
                 _swGame.Reset();
                 _isGameTimerReset = true;
                 tbGameTime.Visibility = Visibility.Collapsed;
@@ -997,67 +1033,43 @@ namespace PhasmoAssist
 
         private void Plus() => AddGhostEventButton_Click(null, null);
 
-        private async Task AssistTimer()
+        private void UpdateAssistTimer()
         {
-            while (!(_assistTimerToken == null || _assistTimerToken.IsCancellationRequested))
+            var elapsed = _sw.Elapsed;
+            var text = elapsed.Minutes > 0 ? elapsed.ToString(@"mm\:ss") : elapsed.ToString(@"ss");
+            if (tbAssistTimer.Text != text)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    if (_sw.Elapsed.Minutes > 0)
-                    {
-                        tbAssistTimer.Text = _sw.Elapsed.ToString("mm") + ":" + _sw.Elapsed.ToString("ss");
-                    }
-                    else
-                    {
-                        tbAssistTimer.Text = _sw.Elapsed.ToString("ss");
-                    }
+                tbAssistTimer.Text = text;
+            }
 
-                    if (_sw.Elapsed.Seconds >= 20 && _sw.Elapsed.Seconds < 22)
-                    {
-                        tbAssistTimer.FontSize = _timerFontSizeAbove20;
-                    }
-                    if (_sw.Elapsed.Seconds >= 25 && _sw.Elapsed.Seconds < 27)
-                    {
-                        tbAssistTimer.FontSize = _timerFontSizeAbove20 + 4;
-                        tbAssistTimer.Foreground = Brushes.Red;
-                    }
+            var seconds = elapsed.TotalSeconds;
+            var isRed = (seconds >= 25 && seconds < 100) || seconds >= 180;
+            var fontSize = isRed ? _timerFontSizeAbove20 + 4
+                : seconds >= 20 ? _timerFontSizeAbove20 : _timerFontSizeInitial;
+            var foreground = isRed ? Brushes.Red : Brushes.White;
 
-                    if (_sw.Elapsed.Seconds >= 100 && _sw.Elapsed.Seconds < 102)
-                    {
-                        tbAssistTimer.Foreground = Brushes.White;
-                        tbAssistTimer.FontSize = _timerFontSizeAbove20;
-                    }
-                    if (_sw.Elapsed.Seconds >= 180 && _sw.Elapsed.Seconds < 182)
-                    {
-                        tbAssistTimer.FontSize = _timerFontSizeAbove20 + 4;
-                        tbAssistTimer.Foreground = Brushes.Red;
-                    }
+            if (tbAssistTimer.FontSize != fontSize)
+            {
+                tbAssistTimer.FontSize = fontSize;
+            }
+            if (!ReferenceEquals(tbAssistTimer.Foreground, foreground))
+            {
+                tbAssistTimer.Foreground = foreground;
+            }
 
-                    if (_sw.Elapsed.TotalMinutes >= 10)
-                    {
-                        _assistTimerToken.Cancel();
-                    }
-                });
-                await Task.Delay(100);
+            if (seconds >= 600)
+            {
+                _assistTimer.Stop();
             }
         }
 
-        private async Task GameTimer()
+        private void UpdateGameTimer()
         {
-            while (!(_gameTimerToken == null || _gameTimerToken.IsCancellationRequested))
+            var elapsed = _swGame.Elapsed;
+            var text = elapsed.Minutes > 0 ? elapsed.ToString(@"mm\:ss") : elapsed.ToString(@"ss");
+            if (tbGameTime.Text != text)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    if (_swGame.Elapsed.Minutes > 0)
-                    {
-                        tbGameTime.Text = _swGame.Elapsed.ToString("mm") + ":" + _swGame.Elapsed.ToString("ss");
-                    }
-                    else
-                    {
-                        tbGameTime.Text = _swGame.Elapsed.ToString("ss");
-                    }
-                });
-                await Task.Delay(100);
+                tbGameTime.Text = text;
             }
         }
 
@@ -1211,19 +1223,12 @@ namespace PhasmoAssist
             }
         }
 
-        private async Task BlinkText()
+        private void UpdateBlinkText()
         {
-            while (!(_blinkTextToken == null || _blinkTextToken.IsCancellationRequested))
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    tbBlink1.Visibility = tbBlink1.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    tbBlink2.Visibility = tbBlink2.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    tbBlink3.Visibility = tbBlink3.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    tbBlink4.Visibility = tbBlink4.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                });
-                await Task.Delay(TimeSpan.FromSeconds(2));
-            }
+            tbBlink1.Visibility = tbBlink1.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            tbBlink2.Visibility = tbBlink2.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            tbBlink3.Visibility = tbBlink3.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            tbBlink4.Visibility = tbBlink4.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void CheckVisibilityOnTimerTick(object? sender, EventArgs e)
@@ -1253,12 +1258,13 @@ namespace PhasmoAssist
             if (_isTemporarilyHidden) return;
 
             var assistProcessName = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().GetName().Name);
-            var proc1Focused = IsAppFocused(assistProcessName!);
-            var proc2Focused = IsAppFocused(TargetProcessName);
+            var foregroundProcessName = GetForegroundProcessName();
+            var proc1Focused = string.Equals(foregroundProcessName, assistProcessName, StringComparison.OrdinalIgnoreCase);
+            var proc2Focused = string.Equals(foregroundProcessName, TargetProcessName, StringComparison.OrdinalIgnoreCase);
 
             if (!proc1Focused && !proc2Focused)
             {
-                if (HideWhenNotActive)
+                if (_isFocused && HideWhenNotActive)
                 {
                     Hide();
                 }
@@ -1266,11 +1272,11 @@ namespace PhasmoAssist
             }
             else
             {
-                if (!_isFocused && _isVisible && !_isTemporarilyHidden && proc2Focused) // check the _isTemporarilyHidden one more time because it could be changed asynchronously
+                if (!_isFocused && _isVisible && !_isTemporarilyHidden && proc2Focused)
                 {
                     Show();
-                    _isFocused = true;
                 }
+                _isFocused = true;
             }
         }
 
@@ -1305,23 +1311,37 @@ namespace PhasmoAssist
             SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
         }
 
-        private static bool IsAppFocused(string processName)
+        private static string? GetForegroundProcessName()
         {
             var foreground = GetForegroundWindow();
             if (foreground == IntPtr.Zero)
             {
-                return false;
+                return null;
             }
 
             GetWindowThreadProcessId(foreground, out uint pid);
-            var proc = Process.GetProcessesByName(processName).FirstOrDefault();
-
-            if (proc == null)
+            if (pid == 0)
             {
-                return false;
+                return null;
             }
 
-            return proc.Id == pid;
+            try
+            {
+                using var process = Process.GetProcessById((int)pid);
+                return process.ProcessName;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                return null;
+            }
         }
 
         #region DLL IMPORT
